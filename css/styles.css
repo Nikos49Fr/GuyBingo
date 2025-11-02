@@ -12,7 +12,7 @@
   --card-border: 1px;
   /* --card-bg et --card-bg-back non utilisés supprimés */
   --card-text: #ffffff;
-  --veil-gold: rgba(255, 209, 102, 0.05);
+  --veil-gold: rgba(255, 209, 102, 0.10);
   --veil-gold-strong: rgba(255, 209, 102, 0.15);
   --scene-safe-left: 25%; /* zone gauche de l'image à laisser libre (ajustable) */
 }
@@ -107,6 +107,12 @@ body.gb-app {
   color: #ffffff;
   padding: 8px 10px;
   font-size: 14px;
+}
+
+/* Style du placeholder de l'éditeur (texte par défaut "Objectif") */
+.gb-editor .gb-input--text::placeholder {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .gb-select {
@@ -460,6 +466,10 @@ body.gb-app {
   word-break: break-word;
   font-size: clamp(12px, 2.6cqi, 18px);
   line-height: 1.2;
+}
+.gb-card__content.is-placeholder {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.4);
 }
 .gb-card__content img {
   width: 100%;

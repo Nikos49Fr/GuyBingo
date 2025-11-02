@@ -5,7 +5,6 @@
 (() => {
     const els = {
         sizeSelect: document.getElementById('sizeSelect'),
-        generateBtn: document.getElementById('generateBtn'),
         resetCheckedBtn: document.getElementById('resetCheckedBtn'),
         exportBtn: document.getElementById('exportBtn'),
         importBtn: document.getElementById('importBtn'),
@@ -15,6 +14,7 @@
         tplCard: document.getElementById('tpl-card'),
         board: document.getElementById('board'),
         shuffleBtn: document.getElementById('shuffleBtn'),
+        clearGoalsBtn: document.getElementById('clearGoalsBtn'),
     };
 
     const STORAGE_KEY = 'guybingo_config';
@@ -64,14 +64,26 @@
             root.querySelector('.gb-editor__index').textContent = i + 1;
 
             const textInput = root.querySelector('.gb-input--text');
-            const cellData = state.cells[i] || { value: `Case ${i + 1}` };
-            textInput.value = cellData.value;
+            const cellData = state.cells[i] || { value: '' };
+            textInput.placeholder = 'Objectif';
+            textInput.value = cellData.value || '';
 
             textInput.addEventListener('input', () => {
-                state.cells[i] = { type: 'text', value: textInput.value };
+                const val = textInput.value;
+                state.cells[i] = { type: 'text', value: val };
                 saveState();
+                // Mise à jour immédiate de la carte correspondante
+                const card = document.querySelector(`.gb-card[data-index="${i}"]`);
+                if (card) {
+                    const isPH = !val.trim();
+                    const txt = isPH ? 'Objectif' : val;
+                    card.querySelectorAll('.gb-card__content').forEach(el => {
+                        el.textContent = txt;
+                        el.classList.toggle('is-placeholder', isPH);
+                    });
+                }
             });
-
+        
             els.editor.appendChild(row);
         }
         saveState();
@@ -83,7 +95,7 @@
         els.board.innerHTML = '';
         const total = state.size * state.size;
         for (let i = 0; i < total; i++) {
-            const cell = state.cells[i] || { type: 'text', value: `Case ${i + 1}` };
+            const cell = state.cells[i] || { type: 'text', value: '' };
             const tpl = els.tplCard.innerHTML.replace(/__i__/g, i);
             const wrapper = document.createElement('div');
             wrapper.innerHTML = tpl.trim();
@@ -91,7 +103,10 @@
 
             qsAll('.gb-card__face', card).forEach(face => {
                 const cont = face.querySelector('.gb-card__content');
-                cont.textContent = cell.value || `Case ${i + 1}`;
+                const val = (cell.value || '').toString();
+                const isPH = !val.trim();
+                cont.textContent = isPH ? 'Objectif' : val;
+                cont.classList.toggle('is-placeholder', isPH);
             });
 
             if (state.checked.has(i)) card.classList.add('is-checked');
@@ -204,10 +219,14 @@
     }
 
     /* ---------- Actions boutons ---------- */
-    els.generateBtn.addEventListener('click', () => {
+    // Changement immédiat de la taille de grille
+    els.sizeSelect.addEventListener('change', () => {
         state.size = parseInt(els.sizeSelect.value, 10);
+        state.checked.clear();
+        state.lastCompleted = new Set();
         renderEditor();
         renderBoard();
+        saveState();
     });
 
     els.resetCheckedBtn.addEventListener('click', () => {
@@ -216,14 +235,23 @@
         renderBoard();
     });
 
+    // Effacer le contenu de tous les objectifs (éditeur + grille)
+    els.clearGoalsBtn.addEventListener('click', () => {
+        const total = state.size * state.size;
+        state.cells = Array.from({ length: total }, () => ({ type: 'text', value: '' }));
+        saveState();
+        renderEditor();
+        renderBoard();
+    });
+
     // Mélanger les cases visibles (n*n) et réinitialiser les coches
     els.shuffleBtn.addEventListener('click', () => {
         const total = state.size * state.size;
-        // Construit un tableau des N cellules utilisées (remplit les manquantes)
+        // Construit un tableau des N cellules utilisées (remplit les manquantes par valeur vide => placeholder)
         const cells = Array.from({ length: total }, (_, i) => {
             const c = state.cells[i];
             if (c && typeof c.value === 'string') return { type: 'text', value: c.value };
-            return { type: 'text', value: `Case ${i + 1}` };
+            return { type: 'text', value: '' };
         });
         // Shuffle de Fisher–Yates
         for (let i = cells.length - 1; i > 0; i--) {
@@ -261,7 +289,7 @@
                 state.size = data.size || 3;
                 state.cells = (data.cells || []).map((c, idx) => ({
                     type: 'text',
-                    value: (c && c.value) ? c.value : `Case ${idx + 1}`
+                    value: (c && c.value) ? c.value : ''
                 }));
                 state.checked = new Set(data.checked || []);
                 els.sizeSelect.value = state.size;
