@@ -1,20 +1,38 @@
 @charset "UTF-8";
 /* ================================
-   Guy Bingo — styles.scss
-   (indentation 4 espaces)
-   ================================ */
+
+
 /* ---------- Variables ---------- */
 :root {
-  --overlay-size: 700px; /* carré 500x500 pour la zone capturée */
+  --overlay-size: 700px;
   --board-gap: 8px;
   --board-pad: 12px;
   --card-radius: 8px;
-  --card-border: 1px;
-  /* --card-bg et --card-bg-back non utilisés supprimés */
   --card-text: #ffffff;
   --veil-gold: rgba(255, 209, 102, 0.10);
   --veil-gold-strong: rgba(255, 209, 102, 0.15);
-  --scene-safe-left: 25%; /* zone gauche de l'image à laisser libre (ajustable) */
+  --scene-safe-left: 25%;
+  /* Contrôles typographiques des cartes */
+  --card-text-size: 1em;
+  --card-text-weight: 500;
+}
+
+.gb-card__content {
+  position: relative; /* nécessaire pour le plan z avec la citrouille */
+  display: grid; /* tu voulais place-items: center -> nécessite grid */
+  place-items: center;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  word-break: break-word;
+  font-size: var(--card-text-size, clamp(12px, 2.6cqi, 18px));
+  font-weight: var(--card-text-weight, 400);
+  line-height: 1.2;
+}
+.gb-card__content.is-placeholder {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Citrouille SVG inline (pour pseudo-élément back face) */
@@ -65,11 +83,6 @@ body.gb-app {
   margin-bottom: 12px;
 }
 
-.gb-actions {
-  display: flex;
-  gap: 8px;
-}
-
 .gb-section {
   margin: 16px 0;
 }
@@ -88,6 +101,44 @@ body.gb-app {
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Groupe sliders typographiques côte à côte */
+.gb-typo-row {
+  align-items: center;
+  gap: 10px;
+}
+
+.gb-slider-group {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 6px 8px;
+  flex: 1 1 220px;
+  max-width: 320px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.gb-slider-group .gb-label {
+  font-size: 14px; /* comme les boutons */
+  grid-column: 1/-1; /* label au-dessus, sur toute la largeur */
+}
+
+.gb-input--range {
+  width: 100%;
+  grid-column: 1; /* barre à gauche */
+}
+
+.gb-slider-value {
+  grid-column: 2; /* valeur à droite de la barre */
+  justify-self: end;
+  font-size: 18px;
+  font-weight: 600;
+  min-width: 1.5em;
+  text-align: right;
 }
 
 .gb-label {
@@ -232,29 +283,6 @@ body.gb-app {
   border: 2px solid #ffd166;
   border-radius: 10px;
   box-shadow: none;
-}
-
-/* Fallback voile global quand le plateau est complet (si .gb-winlayers absent) */
-.gb-board::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: transparent;
-  opacity: 0;
-  transition: opacity 150ms ease, background 150ms ease;
-  z-index: 5; /* au-dessus des cartes transformées */
-  border-radius: 12px; /* voile arrondi */
-}
-
-.gb-board.gb-complete::after {
-  background: transparent;
-  opacity: 0;
-}
-
-/* Effet plein plateau: bordure dorée pulsante sur chaque carte */
-.gb-board.gb-complete .gb-card {
-  animation: card-complete-pulse 1200ms ease-in-out 3 forwards;
 }
 
 @keyframes card-complete-pulse {
@@ -455,32 +483,6 @@ body.gb-app {
 }
 
 /* Contenu texte / image */
-.gb-card__content {
-  position: relative; /* nécessaire pour le plan z avec la citrouille */
-  display: grid; /* tu voulais place-items: center -> nécessite grid */
-  place-items: center;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  word-break: break-word;
-  font-size: clamp(12px, 2.6cqi, 18px);
-  line-height: 1.2;
-}
-.gb-card__content.is-placeholder {
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.4);
-}
-.gb-card__content img {
-  width: 100%;
-  height: 100%;
-  object-fit: var(--fit, contain);
-  border-radius: calc(var(--card-radius) - 2px);
-  user-select: none;
-  -webkit-user-drag: none;
-  pointer-events: none;
-}
-
 /* Quand toute la grille est complétée, accentuer le voile général */
 .gb-board.gb-complete {
   box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.45) inset, 0 0 18px rgba(255, 209, 102, 0.25);

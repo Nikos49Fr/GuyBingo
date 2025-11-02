@@ -41,6 +41,20 @@
                 <div class="gb-field gb-field--row">
                     <button id="shuffleBtn" class="gb-btn" type="button" title="Mélanger les cases">Aléatoire</button>
                 </div>
+                
+                <!-- Réglages typographiques -->
+                <div class="gb-field gb-field--row gb-typo-row">
+                    <div class="gb-slider-group">
+                        <label class="gb-label" for="fontSizeSlider">Taille de la police</label>
+                        <input id="fontSizeSlider" class="gb-input gb-input--range" type="range" min="8" max="36" step="1" value="16" />
+                        <span id="fontSizeValue" class="gb-slider-value">16</span>
+                    </div>
+                    <div class="gb-slider-group">
+                        <label class="gb-label" for="fontWeightSlider">Épaisseur du texte</label>
+                        <input id="fontWeightSlider" class="gb-input gb-input--range" type="range" min="1" max="9" step="1" value="5" />
+                        <span id="fontWeightValue" class="gb-slider-value">5</span>
+                    </div>
+                </div>
 
                 <div class="gb-field gb-field--row">
                     <button id="exportBtn" class="gb-btn" type="button">Exporter JSON</button>
@@ -114,4 +128,5 @@
     <script src="app.js" defer></script>
 </body>
 </html>
+
 

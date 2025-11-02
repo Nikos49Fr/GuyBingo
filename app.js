@@ -15,6 +15,10 @@
         board: document.getElementById('board'),
         shuffleBtn: document.getElementById('shuffleBtn'),
         clearGoalsBtn: document.getElementById('clearGoalsBtn'),
+        fontSizeSlider: document.getElementById('fontSizeSlider'),
+        fontSizeValue: document.getElementById('fontSizeValue'),
+        fontWeightSlider: document.getElementById('fontWeightSlider'),
+        fontWeightValue: document.getElementById('fontWeightValue'),
     };
 
     const STORAGE_KEY = 'guybingo_config';
@@ -25,6 +29,8 @@
         checked: new Set(),
         // lignes/colonnes/diagonales complétées à la dernière vérification
         lastCompleted: new Set(),
+        textSize: 16,      // px
+        textWeight: 500,   // 100..900
     };
 
     /* ---------- Utils ---------- */
@@ -33,6 +39,8 @@
             size: state.size,
             cells: state.cells,
             checked: Array.from(state.checked),
+            textSize: state.textSize,
+            textWeight: state.textWeight,
         }));
     }
 
@@ -44,9 +52,21 @@
             state.size = data.size || 3;
             state.cells = Array.isArray(data.cells) ? data.cells : [];
             state.checked = new Set(data.checked || []);
+            if (typeof data.textSize === 'number') state.textSize = data.textSize;
+            if (typeof data.textWeight === 'number') state.textWeight = data.textWeight;
         } catch (e) {
             console.warn('Failed to parse saved state', e);
         }
+    }
+
+    function applyTypography() {
+        const root = document.documentElement;
+        root.style.setProperty('--card-text-size', `${state.textSize}px`);
+        root.style.setProperty('--card-text-weight', String(state.textWeight));
+        if (els.fontSizeValue) els.fontSizeValue.textContent = String(state.textSize);
+        if (els.fontSizeSlider) els.fontSizeSlider.value = String(state.textSize);
+        if (els.fontWeightValue) els.fontWeightValue.textContent = String(Math.round(state.textWeight / 100));
+        if (els.fontWeightSlider) els.fontWeightSlider.value = String(Math.round(state.textWeight / 100));
     }
 
     function qsAll(sel, ctx = document) {
@@ -266,6 +286,24 @@
         renderBoard();
     });
 
+    // Sliders typographiques
+    if (els.fontSizeSlider) {
+    els.fontSizeSlider.addEventListener('input', () => {
+        const v = Math.max(8, Math.min(36, parseInt(els.fontSizeSlider.value || '16', 10)));
+        state.textSize = v;
+        saveState();
+        applyTypography();
+    });
+    }
+    if (els.fontWeightSlider) {
+        els.fontWeightSlider.addEventListener('input', () => {
+            const step = Math.max(1, Math.min(9, parseInt(els.fontWeightSlider.value || '5', 10)));
+            state.textWeight = step * 100;
+            saveState();
+            applyTypography();
+        });
+    }
+
     els.exportBtn.addEventListener('click', () => {
         const blob = new Blob([JSON.stringify({
             size: state.size,
@@ -306,6 +344,7 @@
     /* ---------- Init ---------- */
     loadState();
     els.sizeSelect.value = state.size;
+    applyTypography();
     renderEditor();
     renderBoard();
 })();
