@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guy Bingo</title>
+
+    <!-- styles.css sera généré depuis styles.scss -->
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="gb-app">
+    <main class="gb-layout">
+        <!-- Panneau de contrôle (colonne gauche) -->
+        <aside class="gb-panel" id="controlPanel">
+            <header class="gb-panel__header">
+                <h1 class="gb-title">Guy Bingo</h1>
+            </header>
+
+            <section class="gb-section gb-section--grid">
+                <div class="gb-field">
+                    <label for="sizeSelect" class="gb-label">Taille de grille</label>
+                    <select id="sizeSelect" class="gb-select">
+                        <option value="3">3 × 3</option>
+                        <option value="4">4 × 4</option>
+                        <option value="5">5 × 5</option>
+                    </select>
+                </div>
+
+                <div class="gb-field gb-field--row">
+                    <button id="generateBtn" class="gb-btn gb-btn--primary" type="button">Générer / Mettre à jour</button>
+                    <button id="resetCheckedBtn" class="gb-btn gb-btn--ghost" type="button" title="Décoche toutes les cases">
+                        Reset cochées
+                    </button>
+                </div>
+
+                <div class="gb-field gb-field--row">
+                    <button id="exportBtn" class="gb-btn" type="button">Exporter JSON</button>
+                    <button id="importBtn" class="gb-btn" type="button">Importer JSON</button>
+                    <input id="importFile" type="file" accept="application/json" hidden />
+                </div>
+            </section>
+
+            <!-- Editeur des cellules (texte ou image) -->
+            <section class="gb-section">
+                <h2 class="gb-subtitle">Contenu des cases</h2>
+                <div id="editor" class="gb-editor" aria-live="off">
+                    <!-- Rempli dynamiquement par app.js avec 9/16/25 entrées.
+                         Chaque entrée: type (texte/image), champ texte OU URL image, fit contain/cover (si image). -->
+                </div>
+            </section>
+
+            <footer class="gb-footer">
+                <p class="gb-hint">
+                    <!-- Astuce: une fois configuré, clique sur "Plein écran overlay". Tu peux continuer à cliquer les cases
+                    directement dans la grille à droite. L’animation de flip et les lignes gagnantes se déclencheront automatiquement. -->
+                </p>
+            </footer>
+        </aside>
+
+        <!-- Zone Overlay (colonne droite) — c’est ce cadré que tu captureras dans OBS -->
+        <section class="gb-overlay">
+            <div class="gb-overlay__stage" id="overlayStage">
+                <!-- Fond appliqué via --overlay-bg -->
+                <div class="gb-board" id="board" data-size="3">
+                    <!-- Les cases seront injectées par app.js
+                         Structure:
+                         <button class="gb-card" data-index="0" type="button">
+                             <span class="gb-card__face gb-card__face--front">Texte/Img</span>
+                             <span class="gb-card__face gb-card__face--back">Texte/Img (plus fade + citrouille)</span>
+                         </button>
+                    -->
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <noscript>Active JavaScript pour utiliser Guy Bingo.</noscript>
+
+    <!-- Templates clonés côté JS -->
+    <template id="tpl-editor-row">
+        <div class="gb-editor__row">
+            <div class="gb-editor__cell">
+                <span class="gb-editor__index"></span>
+            </div>
+            <div class="gb-editor__cell gb-editor__cell--grow">
+                <input class="gb-input gb-input--text" type="text" placeholder="Texte de la case" />
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-card">
+        <button class="gb-card" type="button" data-index="__i__" aria-pressed="false">
+            <span class="gb-card__inner">
+                <span class="gb-card__face gb-card__face--front">
+                    <span class="gb-card__content"></span>
+                </span>
+                <span class="gb-card__face gb-card__face--back">
+                    <span class="gb-card__content"></span>
+                </span>
+            </span>
+        </button>
+    </template>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
