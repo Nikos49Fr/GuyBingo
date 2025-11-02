@@ -333,6 +333,11 @@ body.gb-app {
     }
 }
 
+/* Effet plein plateau: 3 pulsations puis état final conservé */
+.gb-board.gb-complete .gb-card {
+    animation: card-complete-pulse 1200ms ease-in-out 3 forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .gb-board.gb-complete .gb-card {
         animation: none;
