@@ -477,7 +477,7 @@ body.gb-app {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 70% 70%;
-  opacity: 0.25;
+  opacity: 0.45;
   pointer-events: none;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
 }
