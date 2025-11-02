@@ -248,7 +248,7 @@ body.gb-app {
 
 /* Effet plein plateau: bordure dorée pulsante sur chaque carte */
 .gb-board.gb-complete .gb-card {
-  animation: card-complete-pulse 1400ms ease-in-out infinite;
+  animation: card-complete-pulse 1200ms ease-in-out 3 forwards;
 }
 
 @keyframes card-complete-pulse {
@@ -259,12 +259,13 @@ body.gb-app {
     box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.55) inset, 0 0 14px rgba(255, 209, 102, 0.35);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0), 0 0 0 rgba(255, 209, 102, 0);
+    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.55) inset, 0 0 14px rgba(255, 209, 102, 0.35);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .gb-board.gb-complete .gb-card {
     animation: none;
+    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.55) inset, 0 0 14px rgba(255, 209, 102, 0.35);
   }
 }
 /* En plateau complet, on retire le voile par carte pour ne garder que le voile global */
