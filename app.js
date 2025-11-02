@@ -14,6 +14,7 @@
         tplEditor: document.getElementById('tpl-editor-row'),
         tplCard: document.getElementById('tpl-card'),
         board: document.getElementById('board'),
+        shuffleBtn: document.getElementById('shuffleBtn'),
     };
 
     const STORAGE_KEY = 'guybingo_config';
@@ -212,6 +213,28 @@
     els.resetCheckedBtn.addEventListener('click', () => {
         state.checked.clear();
         saveState();
+        renderBoard();
+    });
+
+    // Mélanger les cases visibles (n*n) et réinitialiser les coches
+    els.shuffleBtn.addEventListener('click', () => {
+        const total = state.size * state.size;
+        // Construit un tableau des N cellules utilisées (remplit les manquantes)
+        const cells = Array.from({ length: total }, (_, i) => {
+            const c = state.cells[i];
+            if (c && typeof c.value === 'string') return { type: 'text', value: c.value };
+            return { type: 'text', value: `Case ${i + 1}` };
+        });
+        // Shuffle de Fisher–Yates
+        for (let i = cells.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cells[i], cells[j]] = [cells[j], cells[i]];
+        }
+        state.cells = cells;
+        state.checked.clear();
+        state.lastCompleted = new Set();
+        saveState();
+        renderEditor();
         renderBoard();
     });
 

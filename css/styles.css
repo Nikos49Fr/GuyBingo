@@ -10,11 +10,10 @@
   --board-pad: 12px;
   --card-radius: 8px;
   --card-border: 1px;
-  --card-bg: rgba(255, 255, 255, 0.06);
-  --card-bg-back: rgba(255, 255, 255, 0.08);
+  /* --card-bg et --card-bg-back non utilisés supprimés */
   --card-text: #ffffff;
-  --veil-gold: rgba(255, 209, 102, 0.18);
-  --veil-gold-strong: rgba(255, 209, 102, 0.28);
+  --veil-gold: rgba(255, 209, 102, 0.05);
+  --veil-gold-strong: rgba(255, 209, 102, 0.15);
   --scene-safe-left: 25%; /* zone gauche de l'image à laisser libre (ajustable) */
 }
 
@@ -229,6 +228,50 @@ body.gb-app {
   box-shadow: none;
 }
 
+/* Fallback voile global quand le plateau est complet (si .gb-winlayers absent) */
+.gb-board::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 150ms ease, background 150ms ease;
+  z-index: 5; /* au-dessus des cartes transformées */
+  border-radius: 12px; /* voile arrondi */
+}
+
+.gb-board.gb-complete::after {
+  background: transparent;
+  opacity: 0;
+}
+
+/* Effet plein plateau: bordure dorée pulsante sur chaque carte */
+.gb-board.gb-complete .gb-card {
+  animation: card-complete-pulse 1400ms ease-in-out infinite;
+}
+
+@keyframes card-complete-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0), 0 0 0 rgba(255, 209, 102, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(255, 209, 102, 0.55) inset, 0 0 14px rgba(255, 209, 102, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0), 0 0 0 rgba(255, 209, 102, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gb-board.gb-complete .gb-card {
+    animation: none;
+  }
+}
+/* En plateau complet, on retire le voile par carte pour ne garder que le voile global */
+.gb-board.gb-complete .gb-card.veil-persist::before {
+  background: transparent;
+}
+
 /* Colonnes en fonction de data-size */
 .gb-board[data-size="3"] {
   grid-template-columns: repeat(3, 1fr);
@@ -434,9 +477,6 @@ body.gb-app {
 }
 .gb-board.gb-complete .gb-card {
   filter: saturate(1.05);
-}
-.gb-board.gb-complete + .gb-winlayers .gb-winlayer.persist {
-  background: var(--veil-gold-strong);
 }
 
 /* ---------- Aide ---------- */
